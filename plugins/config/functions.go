@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -163,7 +162,6 @@ func SubImport(appName, filePath string) error {
 	if err != nil {
 		return fmt.Errorf("godotenv could not load file at path %s", filePath)
 	}
-	log.Println(envMap)
 
-	return nil
+	return SetMany(appName, envMap, false)
 }
