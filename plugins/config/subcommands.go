@@ -81,3 +81,8 @@ func CommandUnset(appName string, keys []string, global bool, noRestart bool) er
 
 	return SubUnset(appName, keys, noRestart)
 }
+
+// CommnandImport import one or more keys from a file
+func CommnandImport(appName string, filePath string) error {
+	return SubImport(appName, filePath)
+}

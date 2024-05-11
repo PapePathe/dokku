@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/dokku/dokku/plugins/common"
+	"github.com/joho/godotenv"
 )
 
 func export(appName string, merged bool, format string) error {
@@ -149,4 +150,18 @@ func SubUnset(appName string, keys []string, noRestart bool) error {
 	}
 
 	return UnsetMany(appName, keys, !noRestart)
+}
+
+// SubImport implements the logic for config:import without app name validation
+func SubImport(appName, filePath string) error {
+	if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf("The path %s does not exist in the system", filePath)
+	}
+
+	envMap, err := godotenv.Read(filePath)
+	if err != nil {
+		return fmt.Errorf("godotenv could not load file at path %s", filePath)
+	}
+
+	return SetMany(appName, envMap, false)
 }
