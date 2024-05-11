@@ -90,6 +90,27 @@ func TestConfigSetMany(t *testing.T) {
 	Expect(CommandSet(testAppName+"does_not_exist", vals, false, true, false)).ToNot(Succeed())
 }
 
+func TestConfigImportWithLocalFile(t *testing.T) {
+	RegisterTestingT(t)
+	Expect(setupTests()).To(Succeed())
+	Expect(setupTestApp()).To(Succeed())
+	defer teardownTestApp()
+
+	expectValue(testAppName, "testKey", "TESTING")
+	Expect(CommnandImport(testAppName, "./.env")).ToNot(Succeed())
+
+	createTestImportFile(t)
+	Expect(CommnandImport(testAppName, strings.Join([]string{testAppDir, "/import.env"}, ""))).To(Succeed())
+	expectValue(testAppName, "importedKey", "TESTING_LOADED_FROM_ENV")
+}
+
+func createTestImportFile(t *testing.T) {
+	b := []byte("export importedKey=TESTING_LOADED_FROM_ENV\n")
+	if err := os.WriteFile(strings.Join([]string{testAppDir, "/import.env"}, ""), b, 0644); err != nil {
+		t.Errorf("failed to write test config import file")
+	}
+}
+
 func TestConfigUnsetAll(t *testing.T) {
 	RegisterTestingT(t)
 	Expect(setupTests()).To(Succeed())
